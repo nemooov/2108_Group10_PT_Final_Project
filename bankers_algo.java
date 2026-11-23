@@ -49,17 +49,35 @@ public class bankers_algo {
 
     static void showTables() {
         int[][] need = needOf(alloc);
-        System.out.println("\nTotal     = " + Arrays.toString(total));
-        System.out.println("Available = " + Arrays.toString(availableOf(alloc)));
         System.out.println();
-        System.out.printf("%-5s %-14s %-14s %-14s%n", "", "Allocation", "Max", "Need");
+        System.out.println("  " + "Total     = " + Arrays.toString(total));
+        System.out.println("  " + "Available = " + Arrays.toString(availableOf(alloc)));
+        System.out.println();
+        System.out.println("  " + String.format("%-5s %-14s %-14s %-14s", "", "Allocation", "Max", "Need"));
+        System.out.println("  " + rule(50, '-'));
         for (int i = 0; i < n; i++) {
-            System.out.printf("%-5s %-14s %-14s %-14s%n", "P" + i,
-                    Arrays.toString(alloc[i]), Arrays.toString(max[i]), Arrays.toString(need[i]));
+            System.out.println("  " + String.format("%-5s", "P" + i)
+                    + String.format(" %-14s %-14s ", Arrays.toString(alloc[i]), Arrays.toString(max[i]))
+                    + String.format("%-14s", Arrays.toString(need[i])));
         }
     }
 
     static Scanner in = new Scanner(System.in);
+
+    static String rule(int w, char ch) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < w; i++) {
+            sb.append(ch);
+        }
+        return sb.toString();
+    }
+
+    static void title(String text) {
+        System.out.println();
+        System.out.println(rule(56, '='));
+        System.out.println("  " + text);
+        System.out.println(rule(56, '='));
+    }
 
     static void enterSystem() {
         int n2 = readInt("Number of processes (n >= 1): ", 1, 100);
@@ -166,7 +184,7 @@ public class bankers_algo {
         int done = 0;
 
         if (print) {
-            System.out.println("\n--- SAFETY ALGORITHM ---");
+            title("SAFETY ALGORITHM");
             System.out.println("Work = Available = " + Arrays.toString(work));
         }
 
@@ -178,7 +196,7 @@ public class bankers_algo {
                 }
                 boolean fits = fits(need[i], work);
                 if (print) {
-                    System.out.println("  P" + i + ": Need " + Arrays.toString(need[i])
+                    System.out.println("  " + "P" + i + ": Need " + Arrays.toString(need[i])
                             + " <= Work " + Arrays.toString(work) + " ?  " + (fits ? "YES" : "NO"));
                 }
                 if (fits) {
@@ -202,7 +220,7 @@ public class bankers_algo {
 
         boolean safe = done == n;
         if (print) {
-            System.out.println("Finish = " + Arrays.toString(finish));
+            System.out.println("\nFinish = " + Arrays.toString(finish));
             if (safe) {
                 System.out.println("RESULT: SAFE STATE.  Safe sequence: <" + sequence + ">");
             } else {
@@ -218,7 +236,7 @@ public class bankers_algo {
         int[][] need = needOf(alloc);
         int[] avail = availableOf(alloc);
 
-        System.out.println("\n--- REQUEST CHECK: P" + p + " requests " + Arrays.toString(req) + " ---");
+        title("REQUEST CHECK: P" + p + " requests " + Arrays.toString(req));
 
         boolean ok = fits(req, need[p]);
         System.out.println("Step 1: Request <= Need " + Arrays.toString(need[p]) + " ?  " + (ok ? "YES" : "NO"));
@@ -251,19 +269,30 @@ public class bankers_algo {
 
         if (safe) {
             alloc = tentative;
-            System.out.println("\nDECISION: GRANT - the new allocation is kept.");
+            System.out.println("\n" + "DECISION: GRANT - the new allocation is kept.");
         } else {
-            System.out.println("\nDECISION: WAIT - granting would be unsafe, so it is rolled back.");
+            System.out.println("\n" + "DECISION: WAIT - granting would be unsafe, so it is rolled back.");
         }
     }
 
     public static void main(String[] args) {
-        System.out.println("=== BANKER'S ALGORITHM ===");
+        System.out.println();
+        System.out.println(rule(56, '='));
+        System.out.println("  BANKER'S ALGORITHM  |  Deadlock Avoidance Simulator");
+        System.out.println(rule(56, '='));
         while (true) {
             System.out.println();
-            System.out.println("1) Enter a system    2) Load textbook example    3) Safety check");
-            System.out.println("4) Resource request  5) Show tables              0) Exit");
-            int choice = readInt("\nChoose: ", 0, 5);
+            System.out.println(rule(56, '-'));
+            System.out.println("                      MAIN   MENU");
+            System.out.println(rule(56, '-'));
+            System.out.println("  1  Enter a system");
+            System.out.println("  2  Load textbook example");
+            System.out.println("  3  Safety check");
+            System.out.println("  4  Resource request");
+            System.out.println("  5  Show tables");
+            System.out.println("  0  Exit");
+            System.out.println(rule(56, '-'));
+            int choice = readInt("Choose: ", 0, 5);
 
             if (choice == 0) {
                 System.out.println("Goodbye.");
