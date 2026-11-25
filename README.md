@@ -78,9 +78,7 @@ Entering 5 processes and 3 resources (Total 10 5 7) and viewing the tables (opti
 
 Safety check (option 2):
 
-========================================================
   SAFETY ALGORITHM
-========================================================
 Work = Available = [3, 3, 2]
   P0: Need [7, 4, 3] <= Work [3, 3, 2] ?  NO
   P1: Need [1, 2, 2] <= Work [3, 3, 2] ?  YES
@@ -101,9 +99,7 @@ RESULT: SAFE STATE.  Safe sequence: <P1, P3, P0, P2, P4>
 
 Resource request (option 3): P1 asks for 1 0 2:
 
-========================================================
   REQUEST CHECK: P1 requests [1, 0, 2]
-========================================================
 Step 1: Request <= Need [1, 2, 2] ?  YES
 Step 2: Request <= Available [3, 3, 2] ?  YES
 Step 3: Pretend to grant it:
@@ -112,9 +108,7 @@ Step 3: Pretend to grant it:
         Need[P1]       = [0, 2, 0]
 Step 4: Is that state safe?
 
-========================================================
   SAFETY ALGORITHM
-========================================================
 Work = Available = [2, 3, 0]
   P0: Need [7, 4, 3] <= Work [2, 3, 0] ?  NO
   P1: Need [0, 2, 0] <= Work [2, 3, 0] ?  YES
