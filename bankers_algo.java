@@ -1,23 +1,23 @@
 import java.util.Arrays;
 import java.util.Scanner;
 
+/*
+ * Banker's Algorithm Simulator (console).
+ * Part 1: safety algorithm - decides if a system is in a SAFE state.
+ * Part 2: resource-request algorithm - decides GRANT, WAIT or ERROR.
+ */
 public class bankers_algo {
 
+    // The system being simulated: n processes, m resource types.
     static int n, m;
     static int[] total;
+    // Allocation = what each process holds now; Max = the most each may ever need.
     static int[][] alloc;
     static int[][] max;
+    // false until the user enters a system (option 1).
     static boolean loaded = false;
 
-    static void loadSample() {
-        n = 5;
-        m = 3;
-        total = new int[] {10, 5, 7};
-        alloc = new int[][] {{0, 1, 0}, {2, 0, 0}, {3, 0, 2}, {2, 1, 1}, {0, 0, 2}};
-        max = new int[][] {{7, 5, 3}, {3, 2, 2}, {9, 0, 2}, {2, 2, 2}, {4, 3, 3}};
-        loaded = true;
-    }
-
+    // Need = Max - Allocation, for every process and resource.
     static int[][] needOf(int[][] a) {
         int[][] need = new int[n][m];
         for (int i = 0; i < n; i++) {
@@ -28,6 +28,7 @@ public class bankers_algo {
         return need;
     }
 
+    // Available = Total - sum of every process's Allocation (what is free now).
     static int[] availableOf(int[][] a) {
         int[] avail = total.clone();
         for (int i = 0; i < n; i++) {
@@ -38,6 +39,7 @@ public class bankers_algo {
         return avail;
     }
 
+    // True when every number in x is <= the matching number in y (e.g. Need <= Work).
     static boolean fits(int[] x, int[] y) {
         for (int j = 0; j < x.length; j++) {
             if (x[j] > y[j]) {
@@ -47,6 +49,7 @@ public class bankers_algo {
         return true;
     }
 
+    // Prints Total, Available and the Allocation / Max / Need table.
     static void showTables() {
         int[][] need = needOf(alloc);
         System.out.println();
@@ -62,8 +65,10 @@ public class bankers_algo {
         }
     }
 
+    // Reads what the user types.
     static Scanner in = new Scanner(System.in);
 
+    // Builds a line of repeated characters, used for the banner and dividers.
     static String rule(int w, char ch) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < w; i++) {
@@ -72,6 +77,7 @@ public class bankers_algo {
         return sb.toString();
     }
 
+    // Prints a heading between two lines.
     static void title(String text) {
         System.out.println();
         System.out.println(rule(56, '='));
@@ -79,6 +85,46 @@ public class bankers_algo {
         System.out.println(rule(56, '='));
     }
 
+    // Help screen (menu option 5).
+    static void help() {
+        title("HELP");
+        System.out.println("  What this program does");
+        System.out.println("    It checks whether a system of processes and resources is in a SAFE");
+        System.out.println("    state (no deadlock possible) and decides resource requests.");
+        System.out.println();
+        System.out.println("  Menu");
+        System.out.println("    1  Enter a system   Type in your processes and resources first.");
+        System.out.println("    2  Safety check     Shows step by step if a safe sequence exists.");
+        System.out.println("    3  Resource request Asks if a process may get more resources.");
+        System.out.println("    4  Show tables      Shows Total, Available, Allocation, Max, Need.");
+        System.out.println("    5  Help             Shows this screen.");
+        System.out.println("    0  Exit");
+        System.out.println();
+        System.out.println("  Entering a system (option 1), in this order");
+        System.out.println("    - number of processes and number of resource types");
+        System.out.println("    - Total: how many of each resource exist, e.g. 10 5 7");
+        System.out.println("    - Allocation of every process: what it holds now, e.g. 0 1 0");
+        System.out.println("    - Max of every process: the most it will ever need, e.g. 7 5 3");
+        System.out.println("    Use whole numbers (0 or more) separated by spaces.");
+        System.out.println();
+        System.out.println("  Terms");
+        System.out.println("    Need      = Max - Allocation (what a process may still ask for)");
+        System.out.println("    Available = Total - all Allocation (what is free right now)");
+        System.out.println("    Work      = free resources while the safety check runs");
+        System.out.println();
+        System.out.println("  Reading the results");
+        System.out.println("    SAFE    every process can finish; a safe sequence is shown.");
+        System.out.println("    UNSAFE  nobody can finish; deadlock is possible.");
+        System.out.println("    GRANT   the request is safe and is kept.");
+        System.out.println("    WAIT    not enough free resources, or granting would be unsafe.");
+        System.out.println("    ERROR   the request is more than the process's Need.");
+        System.out.println();
+        System.out.println("  Try this: Total 10 5 7, 5 processes");
+        System.out.println("    Allocation P0-P4: 0 1 0 / 2 0 0 / 3 0 2 / 2 1 1 / 0 0 2");
+        System.out.println("    Max        P0-P4: 7 5 3 / 3 2 2 / 9 0 2 / 2 2 2 / 4 3 3");
+    }
+
+    // Option 1: reads a whole system into temporary variables and saves it only if it is valid.
     static void enterSystem() {
         int n2 = readInt("Number of processes (n >= 1): ", 1, 100);
         int m2 = readInt("Number of resource types (m >= 1): ", 1, 100);
@@ -107,6 +153,7 @@ public class bankers_algo {
         showTables();
     }
 
+    // Returns a message describing the first impossible input, or null if the input is fine.
     static String check(int[] t, int[][] a, int[][] mx) {
         for (int i = 0; i < a.length; i++) {
             for (int j = 0; j < t.length; j++) {
@@ -128,12 +175,7 @@ public class bankers_algo {
         return null;
     }
 
-    static void loadExample() {
-        loadSample();
-        System.out.println("Loaded the textbook example (5 processes, 3 resources).");
-        showTables();
-    }
-
+    // Asks until the user types one whole number between lo and hi.
     static int readInt(String prompt, int lo, int hi) {
         while (true) {
             int[] v = readVector(prompt, 1);
@@ -144,6 +186,7 @@ public class bankers_algo {
         }
     }
 
+    // Asks until the user types exactly 'count' whole numbers (0 or more) separated by spaces.
     static int[] readVector(String prompt, int count) {
         while (true) {
             System.out.print(prompt);
@@ -176,8 +219,12 @@ public class bankers_algo {
         }
     }
 
+    // SAFETY ALGORITHM. Work starts as Available. Repeatedly find an unfinished process whose
+    // Need <= Work, let it finish, and add its Allocation back to Work. If every process
+    // finishes the state is SAFE. 'print' turns the step-by-step trace on or off.
     static boolean safety(int[][] a, boolean print) {
         int[][] need = needOf(a);
+        // Work: the free resources while the check runs. finish[i]: has process i finished?
         int[] work = availableOf(a);
         boolean[] finish = new boolean[n];
         StringBuilder sequence = new StringBuilder();
@@ -189,6 +236,7 @@ public class bankers_algo {
         }
 
         while (done < n) {
+            // pick = process chosen this round (-1 means nobody can finish).
             int pick = -1;
             for (int i = 0; i < n && pick == -1; i++) {
                 if (finish[i]) {
@@ -207,6 +255,7 @@ public class bankers_algo {
                 break;
             }
 
+            // The chosen process finishes and gives back everything it held.
             for (int j = 0; j < m; j++) {
                 work[j] += a[pick][j];
             }
@@ -218,6 +267,7 @@ public class bankers_algo {
             }
         }
 
+        // SAFE only if all n processes finished.
         boolean safe = done == n;
         if (print) {
             System.out.println("\nFinish = " + Arrays.toString(finish));
@@ -230,9 +280,13 @@ public class bankers_algo {
         return safe;
     }
 
+    // Option 3: RESOURCE-REQUEST ALGORITHM.
+    // Step 1: Request <= Need, else ERROR.   Step 2: Request <= Available, else WAIT.
+    // Steps 3-4: pretend to grant it and run the safety algorithm on the pretend state.
+    // Step 5: safe -> GRANT (keep it); unsafe -> WAIT (the real data was never changed).
     static void request() {
-        int p = readInt("Which process is requesting (0 to " + (n - 1) + ")? ", 0, n - 1);
-        int[] req = readVector("Request vector (" + m + " value(s)): ", m);
+        int p = readInt("Which process is asking for more resources (0 to " + (n - 1) + ")? ", 0, n - 1);
+        int[] req = readVector("How many more of each resource does it want (" + m + " value(s))? ", m);
         int[][] need = needOf(alloc);
         int[] avail = availableOf(alloc);
 
@@ -252,6 +306,7 @@ public class bankers_algo {
             return;
         }
 
+        // Copy of Allocation to try the request on; row clones keep the real table untouched.
         int[][] tentative = new int[n][];
         for (int i = 0; i < n; i++) {
             tentative[i] = alloc[i].clone();
@@ -275,6 +330,7 @@ public class bankers_algo {
         }
     }
 
+    // Shows the menu again and again until the user chooses 0.
     public static void main(String[] args) {
         System.out.println();
         System.out.println(rule(56, '='));
@@ -286,10 +342,10 @@ public class bankers_algo {
             System.out.println("                      MAIN   MENU");
             System.out.println(rule(56, '-'));
             System.out.println("  1  Enter a system");
-            System.out.println("  2  Load textbook example");
-            System.out.println("  3  Safety check");
-            System.out.println("  4  Resource request");
-            System.out.println("  5  Show tables");
+            System.out.println("  2  Safety check");
+            System.out.println("  3  Resource request");
+            System.out.println("  4  Show tables");
+            System.out.println("  5  Help");
             System.out.println("  0  Exit");
             System.out.println(rule(56, '-'));
             int choice = readInt("Choose: ", 0, 5);
@@ -300,16 +356,16 @@ public class bankers_algo {
             }
             if (choice == 1) {
                 enterSystem();
-            } else if (choice == 2) {
-                loadExample();
+            } else if (choice == 5) {
+                help();
             } else if (!loaded) {
-                System.out.println("Load or enter a system first (option 1 or 2).");
-            } else if (choice == 3) {
+                System.out.println("Enter a system first (option 1). Option 5 shows help.");
+            } else if (choice == 2) {
                 showTables();
                 safety(alloc, true);
-            } else if (choice == 4) {
+            } else if (choice == 3) {
                 request();
-            } else if (choice == 5) {
+            } else if (choice == 4) {
                 showTables();
             }
         }
